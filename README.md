@@ -27,3 +27,30 @@ Mostly for myself. I want a record of what I learned and when, and pushing code 
 What's next
 
 More EDA, then moving into actual model building — decision trees are next on my list.
+
+
+## Day 2 — From Numbers to Insight
+
+Went deeper. Two datasets, one goal: make data talk.
+
+**Tips dataset — full EDA pipeline**
+Univariate → bivariate → multivariate → outlier detection. Correlation heatmaps, pairplots, IQR-based outlier flagging. No black boxes, just structured thinking.
+
+Findings:
+- Bill and tip move together — strong positive correlation
+- Dinner beats lunch, weekends beat weekdays
+- Small groups dominate, tip % swings by day and time
+- Outliers exist — and now I know how to catch them
+
+**Titanic dataset — survival analysis**
+Classic dataset, real signal. Age, fare, class, gender — mapped against survival.
+
+Findings:
+- Women survived at far higher rates than men
+- Money mattered — higher fare, better odds
+- Kids had an edge
+- Third-class men had it worst
+
+## The shift
+
+Day 1 was about looking at data. Day 2 is about asking it questions.

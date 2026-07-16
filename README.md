@@ -4,7 +4,7 @@ Documenting my AI/ML learning journey — one day, one notebook at a time.
 
 I'm learning this mostly on my own, working through concepts and actually coding them out instead of just watching lectures. This repo is where I'm keeping track of everything so I can look back and see how much I've figured out (and probably cringe at some of it later).
 
-Day 1 — Exploratory Data Analysis
+## Day 1 — Exploratory Data Analysis
 
 Started with EDA basics using the classic tips dataset from seaborn. Nothing fancy, just getting comfortable with the fundamentals before moving into anything model-related.
 
@@ -54,3 +54,20 @@ Findings:
 ## The shift
 
 Day 1 was about looking at data. Day 2 is about asking it questions.
+
+## Day 3 — FIFA19: Reading the Game Through Data
+
+Left sports fandom aside. Looked at football as a dataset instead.
+
+Explored the FIFA19 player dataset — ratings, wages, positions, nationalities — and let the numbers tell the story.
+
+Findings:
+- Prime age is 20–30 — the sweet spot for peak performance
+- Right foot dominates the pitch
+- European clubs stack the highest average ratings
+- Wages are wildly uneven — outliers everywhere
+- Certain positions and nations flood the dataset, revealing where the talent pipeline runs deepest
+
+## The pattern so far
+
+Three days, three datasets, one skill compounding: turning raw numbers into a story worth telling.

@@ -104,3 +104,25 @@ Covered the different categories of features and how to handle each:
 **Key takeaway:** Learned a structured decision process for handling missing data based on percentage missing and the type of feature, plus the tradeoffs between label encoding and one-hot encoding.
 
 ---
+
+
+
+---
+
+## Day 7 — Feature Engineering: Target Encoding & Feature Scaling
+**File:** `Day7_FeatureEngineering_and_Scaling.ipynb`
+
+- **Target/mean encoding:** used `groupby` to compute the mean of a numeric column per category, then mapped that back onto the categorical column (e.g., encoding `city` using average `price` per city) — an alternative to one-hot/label encoding for high-cardinality categorical features
+- **Feature scaling** — normalizing the range of numeric features so no single feature dominates a model just because of its scale:
+  - **Standardization (Z-score)** with `StandardScaler` — centers data to mean 0, std 1
+  - **Min-Max Scaling** with `MinMaxScaler` — rescales values into a fixed range (0 to 1)
+  - **Robust Scaling** with `RobustScaler` — uses median and IQR instead of mean/std, so it's not thrown off by outliers (compared mean of a normal list vs a list with an extreme outlier to see why this matters)
+  - **Max Absolute Scaling** with `MaxAbsScaler` — scales by dividing by the max absolute value, keeping sign, output range -1 to 1
+  - **Log Transformation** with `np.log1p` — compresses skewed data (like income) into a more normal-looking distribution
+  - **Power Transformation (Yeo-Johnson)** with `PowerTransformer` — a more general transform to make data more Gaussian-like, works with negative values too
+
+**Key takeaway:** Learned when to use which scaler — StandardScaler for roughly normal data, MinMaxScaler when you need a bounded range, RobustScaler when outliers are present, and log/power transforms for fixing skewed distributions.
+
+---
+
+

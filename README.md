@@ -125,4 +125,20 @@ Covered the different categories of features and how to handle each:
 
 ---
 
+## Day 8 — Time Series Feature Engineering
+**File:** `Day8_TimeSeries_FeatureEngineering.ipynb`
+**Dataset:** Sales data with dates (CSV)
+
+- Converted a date column to `datetime` with `pd.to_datetime()` and extracted date-based features: `year`, `month`, `day`, `dayofweek`, `weekofyear` (via `isocalendar().week`), and `quarter`
+- Engineered `is_weekend` as a binary flag from `dayofweek`
+- **Lag features:** created `Lag_1`, `Lag_3`, `Lag_7` using `.shift()` to bring in previous days' sales values as new columns — useful for models to learn from recent history
+- **Rolling statistics:** computed a rolling mean (`shift(1).rolling(3).mean()`) to smooth out short-term fluctuations
+- **Difference features:** `diff1` using `.diff()` to capture day-over-day momentum/change
+- **Percentage change:** `pct_change() * 100` to capture relative change instead of absolute change
+- Also covered conceptually (notes, not all coded yet): rolling min/max, rolling standard deviation (stable vs volatile series), seasonal features, cyclical encoding (`sin`/`cos` for day of week), and trend features
+
+**Key takeaway:** Learned the core feature engineering toolkit for time series data — lag, rolling, and difference features — which let a model "see" recent history and trends instead of just a single point in time.
+
+---
+
 

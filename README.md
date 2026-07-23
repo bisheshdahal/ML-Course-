@@ -125,5 +125,23 @@ Plotted sales against MA7 and EMA7 side by side to see the difference directly: 
 **Takeaway:** cyclical encoding fixes the "December vs. January" problem for periodic features, and EMA is the better choice when you care more about recent movement than long-run smoothing.
 
 ---
+## Day 10 — Handling Imbalanced Data
+
+**File:** `Day10_Imbalanced_Data.ipynb`
+**Dataset:** Synthetic (generated with numpy / `make_classification`)
+
+Today was about what happens when one class massively outnumbers another — a 90/10 split instead of a nice even 50/50. Started by building an imbalanced dataset by hand: 900 rows for class 0, 100 for class 1, each drawn from its own normal distribution, then concatenated into one dataframe to see the imbalance show up in `value_counts()`.
+
+From there, covered the two classic ways to fix it:
+
+- **Upsampling** — duplicate rows from the minority class (using `resample()` with `replace=True`) until it matches the majority class in size
+- **Downsampling** — randomly drop rows from the majority class (`resample()` with `replace=False`) until it matches the minority class
+
+Both are quick fixes, but upsampling just duplicates existing points rather than creating anything new, which is where **SMOTE** (Synthetic Minority Over-sampling Technique) comes in — it generates new synthetic minority-class points through interpolation between existing ones, instead of copying the same rows over and over. Tried it out on a synthetic dataset from `make_classification` (90/10 split), plotted the classes before and after using `SMOTE().fit_resample()`, and could see the minority class visibly fill out in the scatterplot instead of just stacking duplicate points.
+
+**Takeaway:** upsampling and downsampling are the fast, blunt tools for class imbalance, but SMOTE is the smarter fix when you want the model to see *new* plausible minority examples instead of the same ones repeated.
+
+---
 
 *New day, new entry — this file gets a new section added as I go.*
+

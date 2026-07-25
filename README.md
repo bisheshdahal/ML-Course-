@@ -142,6 +142,42 @@ Both are quick fixes, but upsampling just duplicates existing points rather than
 **Takeaway:** upsampling and downsampling are the fast, blunt tools for class imbalance, but SMOTE is the smarter fix when you want the model to see *new* plausible minority examples instead of the same ones repeated.
 
 ---
+## Day 11 — Simple Linear Regression: From Notebook to Deployed App
+
+**File:** `1Simple Linear Regression/` folder (`SLR.ipynb`, `main.py`, `app.py`)
+**Dataset:** `weight-height.csv`
+
+First time taking a model past the notebook and actually deploying it. Trained a simple linear regression on `weight-height.csv` — used `Weight` as the single feature to predict `Height`, since a scatterplot and correlation heatmap showed a strong linear relationship between the two. Split into train/test, scaled `Weight` with `StandardScaler`, fit a `LinearRegression`, and evaluated it with MSE, MAE, RMSE, R², and adjusted R². Checked the residuals with a histogram to make sure the errors were roughly centered around zero, then saved the trained model and scaler with `joblib`.
+
+From there, wired it up to two small apps:
+
+- `main.py` — a FastAPI backend that loads the saved model/scaler and exposes a `POST /predict` endpoint
+- `app.py` — a Streamlit frontend that takes a weight input, calls the backend, and shows the predicted height
+
+Ran into a real bug here too: `main.py` was loading `simple_linear_regression_model.pkl`, but the notebook had actually saved it as `linear_regression_model.pkl` — a filename mismatch that crashed the backend on startup with a `FileNotFoundError`. Fixed by matching the load path to the actual saved filename.
+
+**Takeaway:** deploying a model is a different skill from training one — FastAPI serves the predictions, Streamlit gives it a UI, and the backend has to be running before the frontend, since the UI calls it directly over HTTP. Also learned to double-check that saved filenames and loaded filenames actually match — an easy mismatch to introduce and an easy one to miss.
+
+## Day 12 — Multiple Linear Regression: Predicting an Economic Index
+
+**File:** `Day12 MLR/` folder (`mlr.ipynb`, `main1.py`, `app1.py`)
+**Dataset:** `economy_index.csv`
+
+Same deployment pattern as Day 11, but with two input features instead of one. Loaded `economy_index.csv` and dropped the unneeded `Unnamed: 0`, `year`, and `month` columns, leaving `interest_rate` and `unemployment_rate` as inputs and `index_price` as the target. Used a pairplot and a correlation matrix to check relationships between all three variables, then regplots of `interest_rate` against both `index_price` and `unemployment_rate` to look at those relationships individually.
+
+Split into train/test (75/25), scaled both input features with `StandardScaler`, and trained a `LinearRegression` model on the two-feature input. Evaluated the same way as Day 11 — MSE, MAE, RMSE, R², adjusted R² — and checked residuals with a distribution plot. Saved the model and scaler with `joblib` as `mlr.pkl` and `scaler.pkl`.
+
+Deployed it the same way as the SLR project:
+
+- `main1.py` — FastAPI backend taking `interest_rate` and `unemployment_rate` as named JSON fields, scaling them, and returning a predicted `index_price`
+- `app1.py` — Streamlit frontend with two number inputs feeding into the same `/predict` call pattern
+
+This time paid close attention to feature order — with multiple inputs, the backend has to build the input array in the exact same column order the model was trained on (`[interest_rate, unemployment_rate]`), or predictions come out wrong with no error to warn you. Since `main1.py` uses named Pydantic fields rather than a raw list, the order stayed correct without needing to think about it too hard.
+
+**Takeaway:** going from one feature to multiple doesn't change the deployment pattern much, but it raises the stakes on keeping feature order consistent between training and inference — a mismatch there fails silently instead of throwing an error.
+
+---
 
 *New day, new entry — this file gets a new section added as I go.*
+
 

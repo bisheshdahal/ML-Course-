@@ -177,7 +177,20 @@ This time paid close attention to feature order — with multiple inputs, the ba
 **Takeaway:** going from one feature to multiple doesn't change the deployment pattern much, but it raises the stakes on keeping feature order consistent between training and inference — a mismatch there fails silently instead of throwing an error.
 
 ---
+## Day 13 — Insurance Charges Prediction
+
+**File:** `insurance-prediction.ipynb`, `app.py`
+**Dataset:** `insurance.csv`
+
+Went through a few iterations of the same model before landing on a final version — good practice in seeing how each change actually moved the R² score. First pass dropped `region` entirely and just label-encoded `sex` and `smoker`, which gave a baseline R². Then brought `region` back in with one-hot encoding (`pd.get_dummies`, dropping the first category to avoid the dummy trap), which improved things. Final version added two interaction features — `age_smoker` and `bmi_smoker` — since age and BMI matter a lot more for cost when someone's a smoker, and that combination gave the best R² of the three.
+
+Also did a quick overfitting/underfitting sanity check by comparing R² on the training set versus the test set — close scores on both meant the model wasn't overfitting.
+
+This time skipped saving the model with `joblib` and instead built the Streamlit app (`app.py`) to load `insurance.csv` and retrain the `LinearRegression` model fresh every time the app runs, using the same encoding and interaction-feature steps as the notebook. The app takes age, sex, BMI, children, smoker status, and region as inputs, builds a matching one-row dataframe, reorders its columns to match the training data exactly, and predicts charges.
+
+**Takeaway:** one-hot encoding plus a couple of well-chosen interaction features can meaningfully beat a plain label-encoded baseline, and when a matching-column dataframe is built by hand for prediction, the column order has to line up exactly with training or the prediction is silently wrong.
+
+---
 
 *New day, new entry — this file gets a new section added as I go.*
-
 

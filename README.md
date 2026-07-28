@@ -191,6 +191,34 @@ This time skipped saving the model with `joblib` and instead built the Streamlit
 **Takeaway:** one-hot encoding plus a couple of well-chosen interaction features can meaningfully beat a plain label-encoded baseline, and when a matching-column dataframe is built by hand for prediction, the column order has to line up exactly with training or the prediction is silently wrong.
 
 ---
+## Day 14 — Logistic Regression: Titanic Survival
+
+**File:** `logistic.ipynb`, `main.py`, `app.py`
+**Dataset:** Seaborn's built-in `titanic` dataset
+
+First classification model of the journey, after a run of regression projects. Loaded the Titanic dataset, did the usual EDA pass — shape, info, nulls, countplots of `survived` against `sex` and `class`, an age histogram — then trimmed down to the columns that actually mattered: `survived`, `pclass`, `sex`, `age`, `sibsp`, `parch`, `fare`, `embarked`. Filled missing `age` with the median and missing `embarked` with the mode, then label-encoded `sex` and `embarked` into numbers.
+
+Trained a `LogisticRegression` on an 80/20 split with scaled features, and evaluated with accuracy, a confusion matrix, and a full classification report instead of just accuracy alone — since for survival prediction, false negatives and false positives matter differently. Saved the model and scaler with `joblib`.
+
+Deployed it the same way as the earlier regression projects — `main.py` as a FastAPI backend returning both a survival prediction and a probability, `app.py` as a Streamlit frontend with sliders and dropdowns for passenger details.
+
+**Takeaway:** classification needs a different evaluation lens than regression — accuracy alone can hide a lot, so confusion matrices and classification reports matter more here than they did for the regression projects.
+
+## Day 15 — Hyperparameter Tuning: GridSearch & RandomizedSearch
+
+**File:** `Hyperparameter.ipynb`
+**Dataset:** `load_breast_cancer` (from scikit-learn)
+
+A dedicated day to actually learn hyperparameter tuning properly instead of hand-picking values. Loaded the breast cancer dataset, split and scaled it, then tried two different search strategies:
+
+- **`GridSearchCV`** on a `KNeighborsClassifier`, searching over a small grid of `n_neighbors` and `weights` values — exhaustively tries every combination in the grid, which works fine when the search space is small.
+- **`RandomizedSearchCV`** on a `RandomForestClassifier`, sampling random combinations from distributions (`randint` for `n_estimators`, `min_samples_split`, `max_depth`) instead of trying every possible combination — necessary once the search space gets too large for a full grid search to be practical.
+
+Pulled out `best_params_` and `best_estimator_` from each search and scored the tuned models on the test set.
+
+**Takeaway:** grid search is exhaustive and fine for small search spaces, while randomized search samples instead of exhausting — the practical choice once there are too many hyperparameter combinations to try them all.
+
+---
 
 *New day, new entry — this file gets a new section added as I go.*
 

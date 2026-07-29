@@ -219,6 +219,23 @@ Pulled out `best_params_` and `best_estimator_` from each search and scored the 
 **Takeaway:** grid search is exhaustive and fine for small search spaces, while randomized search samples instead of exhausting — the practical choice once there are too many hyperparameter combinations to try them all.
 
 ---
+## Day 16 — K-Nearest Neighbors: The Core Idea
+
+**File:** `knn.ipynb`
+**Dataset:** Small worked-by-hand examples (no real dataset yet)
+
+A conceptual day before jumping into actual KNN code — worked through the algorithm by hand on two toy examples to make sure the mechanics actually made sense first.
+
+For **KNN classification**, used a tiny height/weight/gender table and a new person (168cm, 62kg): picked K=3, calculated distance to every training point, took the 3 nearest neighbors, and let them vote on the label — 2 said Male, 1 said Female, so the prediction was Male.
+
+For **KNN regression**, did the same thing with a house size/price table and a new house at size 1250: found the 3 nearest houses by size (1000, 1200, 1300), and instead of voting, averaged their prices to get the prediction (58.33 lakhs).
+
+Also noted the two distance metrics that matter for the "find nearest neighbors" step — Euclidean distance (straight-line, like a flight path) versus Manhattan distance (only horizontal/vertical movement, like a taxi navigating a grid of streets).
+
+**Takeaway:** KNN classification and KNN regression use the exact same first three steps (choose K, measure distance, find the neighbors) — they only diverge at the last step, where classification votes and regression averages.
+
+---
 
 *New day, new entry — this file gets a new section added as I go.*
+
 

@@ -235,7 +235,22 @@ Also noted the two distance metrics that matter for the "find nearest neighbors"
 **Takeaway:** KNN classification and KNN regression use the exact same first three steps (choose K, measure distance, find the neighbors) — they only diverge at the last step, where classification votes and regression averages.
 
 ---
+## Day 17 — Naive Bayes Classification
+
+**File:** `naivebayes.ipynb`
+**Dataset:** Seaborn's built-in `iris` dataset
+
+First time using Naive Bayes, and the first classification project with proper cross-validation baked in. Loaded the Iris dataset, checked shape/info/describe and class balance with `value_counts()`, then visualized it with a pairplot colored by species and a correlation heatmap across the numeric features.
+
+Split into train/test with `stratify=y` this time, so the class ratio stays the same in both sets instead of risking an uneven split by chance. Scaled the features, then trained a `GaussianNB` model and checked training vs. test accuracy, a full classification report, and a confusion matrix (plotted with `ConfusionMatrixDisplay` this time instead of a raw heatmap).
+
+Went further than previous days on validation: ran 5-fold `StratifiedKFold` cross-validation to get an average accuracy across folds rather than trusting a single train/test split, then used `GridSearchCV` to tune `var_smoothing` — the one real hyperparameter Naive Bayes has — over a log-spaced range of values. Pulled out the best model from the grid search, saved it and the scaler with `joblib`, then reloaded both to confirm a fresh prediction still worked correctly.
+
+**Takeaway:** stratified splitting and stratified cross-validation matter more on datasets where class balance is easy to accidentally break, and even a "simple" model like Naive Bayes has a hyperparameter worth tuning rather than leaving at its default.
+
+---
 
 *New day, new entry — this file gets a new section added as I go.*
+
 
 

@@ -249,8 +249,34 @@ Went further than previous days on validation: ran 5-fold `StratifiedKFold` cros
 **Takeaway:** stratified splitting and stratified cross-validation matter more on datasets where class balance is easy to accidentally break, and even a "simple" model like Naive Bayes has a hyperparameter worth tuning rather than leaving at its default.
 
 ---
+## Day 18 — Decision Trees: Theory
+
+**File:** `DT.ipynb`
+**Dataset:** N/A — reference notes, no code this time
+
+A pure theory day before writing any Decision Tree code. This notebook is a set of reference notes/slides rather than executable cells — covering the core ideas behind how a decision tree actually splits data (impurity, information gain, how the tree decides which feature to split on at each node) before jumping into building one.
+
+**Takeaway:** wanted the "why" behind decision tree splitting settled first, so that Day 19's actual code wouldn't just be copy-pasting `DecisionTreeClassifier()` without understanding what it's doing under the hood.
+
+## Day 19 — Decision Tree Classification: Adult Income Prediction
+
+**File:** `adult.ipynb`, `main.py`
+**Dataset:** UCI Adult / Census Income dataset (`adult.csv`)
+
+First project predicting income bracket (`<=50K` vs `>50K`) instead of a continuous number or a simple binary outcome. Loaded the dataset with proper column names (the raw CSV has no header row), then found that missing values weren't stored as actual NaNs — they showed up as the string `' ?'`, so had to explicitly replace those with `np.nan` before `isnull()` would catch them. Filled the missing categorical values with the column mode.
+
+Label-encoded every categorical column and stored each encoder in a dictionary keyed by column name, so the exact same encoding could be reapplied later on new data. Trained a `DecisionTreeClassifier`, checked accuracy/classification report/confusion matrix, then pulled out feature importances and plotted the top few levels of the tree itself with `plot_tree()` to see which features it was actually splitting on first.
+
+Ran `GridSearchCV` over `criterion`, `max_depth`, `min_samples_split`, and `min_samples_leaf` to tune the tree instead of using default settings, and saved both the tuned model and the full encoder dictionary with `joblib`.
+
+Deployed with a FastAPI backend (`main.py`) that takes a person's details as JSON, renames the fields to match the training data's hyphenated column names (`education_num` → `education-num`, etc.), runs each categorical field through its saved encoder — rejecting anything not seen during training — and returns the predicted income bracket.
+
+**Takeaway:** real-world data doesn't always mark missing values as actual nulls — sometimes it's a placeholder string that needs to be caught explicitly first. Also, saving one encoder per column (not just one shared encoder) is what makes it possible to correctly decode each field back to its original categories at prediction time.
+
+---
 
 *New day, new entry — this file gets a new section added as I go.*
+
 
 
 

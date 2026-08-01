@@ -274,8 +274,40 @@ Deployed with a FastAPI backend (`main.py`) that takes a person's details as JSO
 **Takeaway:** real-world data doesn't always mark missing values as actual nulls — sometimes it's a placeholder string that needs to be caught explicitly first. Also, saving one encoder per column (not just one shared encoder) is what makes it possible to correctly decode each field back to its original categories at prediction time.
 
 ---
+## Day 20 — Support Vector Machines & Comparing Multiple Models
+
+**File:** `SupportVectorMachine.ipynb`, `best_model.pkl`
+**Dataset:** Bank marketing dataset (`bank.csv`)
+
+Biggest project structurally so far — instead of training one model, built a proper `ColumnTransformer` + `Pipeline` preprocessing setup (median imputation + scaling for numeric columns, mode imputation + one-hot encoding for categorical ones) and reused it across four different classifiers to compare them fairly: Logistic Regression, KNN, Decision Tree, and SVM.
+
+Did some feature engineering before the split — `contacted_before` as a flag for whether `pdays` was -1 (never contacted), and `balance_per_age` as a simple ratio feature. Tuned Logistic Regression, KNN, and Decision Tree each with their own `GridSearchCV`, then compared all three on test accuracy in a results table. KNN came out on top and got saved as `best_model.pkl`.
+
+Ran into a real bug in the SVM grid: `'classifier__kernel':['Linear','rbf']` — scikit-learn's kernel names are lowercase and case-sensitive, so `'Linear'` isn't valid and would throw immediately. It hadn't caused a crash yet only because the SVM grid search itself was commented out (`#Dont run`, likely because it's the slowest of the four on this dataset). Fixed the typo to `'linear'` and confirmed with a real `GridSearchCV` run that it no longer errors, so it's ready to include next time the SVM step actually gets run.
+
+Also found that loading `best_model.pkl` fresh needs `pyarrow` installed alongside scikit-learn — it wasn't in `requirements.txt` and the load failed without it. Once installed, the model loads and predicts correctly; ran it on a new-customer example and got a clean prediction with a probability back.
+
+**Takeaway:** wrapping preprocessing in a `Pipeline`/`ColumnTransformer` instead of doing it by hand made it trivial to plug four different classifiers into the exact same preprocessing and compare them on equal footing. Also learned that a saved model can carry a hidden dependency (like `pyarrow` here) that only shows up when loading it somewhere fresh — worth checking `requirements.txt` covers everything a `.pkl` actually needs, not just what trained it.
+
+## Day 21 — Random Forest Regression: Car Selling Price Prediction
+
+**File:** `cd.ipynb`
+**Dataset:** CarDekho used car listings (`cardekho.csv`)
+
+First regression project using an ensemble model instead of a linear one. Dropped identifier-style columns that wouldn't generalize (`Unnamed: 0`, `car_name`, `model` — too many unique values to be useful features), then cleaned the data: dropped nulls, removed duplicates, and trimmed the top and bottom 1% of `selling_price` as outliers using quantile clipping.
+
+Explored the cleaned data with a handful of plots — a selling price distribution, average price by fuel type (electric came out highest, LPG lowest), selling price against vehicle age and against km driven, and a correlation heatmap across the numeric columns. `max_power` and `engine` size showed the strongest positive correlation with price, while `mileage` correlated negatively — makes sense, since higher-mileage-per-liter cars tend to be smaller/cheaper ones.
+
+Label-encoded the categorical columns (`brand`, `seller_type`, `fuel_type`, `transmission_type`), then caught a leakage risk before training: had engineered a `price_per_km` feature, but since it's derived directly from `selling_price` (the target), it got dropped from the feature set before the split rather than left in.
+
+Trained a `RandomForestRegressor` (100 trees) and evaluated with MAE, RMSE, and R² — landed at an R² of 0.924 on the first pass. Plotted actual vs. predicted prices to check how tight the fit was, and pulled feature importances, which confirmed `max_power` and `vehicle_age` were doing most of the work in the model's predictions. Ran `GridSearchCV` over `n_estimators`, `max_depth`, and `min_samples_split` to tune further, which nudged R² up to 0.926, then saved the tuned model with `joblib` and reloaded it to confirm a fresh prediction still worked.
+
+**Takeaway:** feature importance plots are a good sanity check that a model is leaning on the features that actually make sense (power and age driving car price, not something spurious) — and any feature computed directly from the target needs to be dropped before training, not just excluded by accident.
+
+---
 
 *New day, new entry — this file gets a new section added as I go.*
+
 
 
 

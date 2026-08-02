@@ -305,6 +305,22 @@ Trained a `RandomForestRegressor` (100 trees) and evaluated with MAE, RMSE, and 
 **Takeaway:** feature importance plots are a good sanity check that a model is leaning on the features that actually make sense (power and age driving car price, not something spurious) — and any feature computed directly from the target needs to be dropped before training, not just excluded by accident.
 
 ---
+## Day 22 — Model Comparison: Predicting Travel Package Purchases
+
+**File:** `tourism1.ipynb`, `best_model.pkl`, `scaler.pkl`, `encoders.pkl`
+**Dataset:** Travel package customer data (`Travel.csv`)
+
+The biggest model comparison so far — seven classifiers (KNN, Logistic Regression, Naive Bayes, Decision Tree, SVM, Random Forest, AdaBoost) run head-to-head to predict whether a customer would take a travel package. Dropped `CustomerID`, imputed missing numeric values with the median and categorical ones with the mode, then explored the target balance, age distribution by outcome, monthly income vs. purchase, and a correlation heatmap across the numeric columns.
+
+Label-encoded the categorical columns, did a stratified train/test split so the target ratio stayed consistent across both sets, and scaled the features for the models that needed it (KNN, Logistic Regression, SVM) while leaving tree-based models on the raw values. Ran all seven through the same accuracy comparison, then took the best of them (a tuned Random Forest via `GridSearchCV`) and evaluated it properly with a classification report and confusion matrix.
+
+Caught a subtle bug while reviewing this one: an accidental second `train_test_split` call later in the notebook re-split the data **without** stratifying, using a different random_state pairing than before — which silently desynced the already-scaled training data from the new labels. KNN, Logistic Regression, and SVM were technically training on mismatched features/labels without erroring, just quietly producing untrustworthy accuracy numbers. Removed the duplicate split so everything downstream consistently uses the one stratified split.
+
+Also fixed how categorical encoding got saved — the original version reused a single `LabelEncoder` object across every column, which meant only the last column's mapping was ever recoverable. Switched to saving one encoder per column in a dictionary (`encoders.pkl`), so a new customer's raw category values can actually be encoded correctly later instead of guessed. Finished the "predict on a new customer" cell, which had been left as an empty placeholder, with a real example row that gets encoded and passed to the saved Random Forest model.
+
+**Takeaway:** a bug that doesn't throw an error is the most dangerous kind — the mismatched split here didn't crash anything, it just quietly corrupted results for three of the seven models. Also, when saving encoders for later reuse, one encoder per categorical column (not one shared object) is what actually makes it possible to encode new data consistently down the line.
+
+---
 
 *New day, new entry — this file gets a new section added as I go.*
 

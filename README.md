@@ -321,8 +321,33 @@ Also fixed how categorical encoding got saved — the original version reused a 
 **Takeaway:** a bug that doesn't throw an error is the most dangerous kind — the mismatched split here didn't crash anything, it just quietly corrupted results for three of the seven models. Also, when saving encoders for later reuse, one encoder per categorical column (not one shared object) is what actually makes it possible to encode new data consistently down the line.
 
 ---
+## Day 23 — Clustering: KMeans, Hierarchical, and DBSCAN
 
-*New day, new entry — this file gets a new section added as I go.*
+**File:** `Clustering.ipynb`
+**Dataset:** Synthetic blobs (`make_blobs`), Iris, synthetic moons (`make_moons`)
+
+First unsupervised learning day — no target variable this time, just finding structure in the data on its own. Started with **KMeans** on synthetic blob data: scaled the features, ran the elbow method by plotting WCSS (within-cluster sum of squares) across k=2 to 10, and confirmed the elbow point visually and with `KneeLocator` from the `kneed` library instead of eyeballing it alone. Cross-checked with silhouette scores across the same range of k, then fit the final model and predicted on held-out test data.
+
+Moved on to **hierarchical clustering** using the Iris dataset — scaled the features, reduced to 2 dimensions with PCA for visualization, and plotted a dendrogram with `scipy`'s `linkage` (Ward's method) to see how points merge into clusters at different distance thresholds. Used `AgglomerativeClustering` to cut the tree into 2 clusters based on that.
+
+Finished with **DBSCAN** on moon-shaped synthetic data — a good example of why density-based clustering exists, since KMeans assumes roughly spherical clusters and would struggle on this crescent shape. DBSCAN groups points by density instead, so it handles the non-convex moon shapes correctly without needing to specify a cluster count upfront.
+
+**Takeaway:** different clustering algorithms make different assumptions about cluster shape — KMeans assumes round/spherical clusters, hierarchical clustering builds a nested structure you can cut at any level, and DBSCAN doesn't assume a shape at all, just density, which is why it's the right tool for something like the moons dataset.
+
+## Day 24 — KMeans in Practice: Mall Customer Segmentation
+
+**File:** `mall.ipynb`
+**Dataset:** `Mall_Customers.csv`
+
+Applied the KMeans workflow from Day 23 to a real business use case — segmenting mall customers by `Annual Income` and `Spending Score` to find natural customer groups a marketing team could actually target. Checked for nulls (none), selected just those two features, and scaled them before clustering.
+
+Ran the elbow method across k=1 to 10 and settled on k=5 as the natural cluster count. Fit the final KMeans model, added the cluster label back onto the original dataframe, and checked a silhouette score to quantify how well-separated the clusters actually were. Inverse-transformed the cluster centers back to the original income/spending scale so they'd be interpretable as real numbers instead of scaled ones, then plotted the customers colored by cluster with the centroids marked on top.
+
+Finished by printing out per-cluster summaries — customer count, average income, and average spending score for each of the 5 groups — which is the part that actually turns "5 clusters" into something a business could act on (e.g. high income / low spending customers are a very different marketing target than low income / high spending ones).
+
+**Takeaway:** clustering only becomes useful once you translate the cluster numbers back into something interpretable — inverse-transforming the centroids and summarizing each cluster's real-world averages is what makes the segmentation actually usable instead of just an abstract plot.
+
+---
 
 
 

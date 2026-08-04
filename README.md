@@ -349,7 +349,30 @@ Finished by printing out per-cluster summaries — customer count, average incom
 
 ---
 
+## Day 25 — NLP Fundamentals: Tokenization, Stemming, Lemmatization, POS Tagging
 
+**File:** `Natural_language_procsessing.ipynb`
+**Dataset:** Short custom text corpora and paragraphs (no external dataset)
+
+First dedicated NLP day, laying out the roadmap before writing any of it: raw text → cleaning (tokenize, stem/lemmatize, remove stopwords) → classical vectorization (BoW, TF-IDF) → semantic embeddings (Word2Vec) → sequence models (RNN/LSTM/GRU) → Transformers/attention → pretrained models like BERT.
+
+Started with **tokenization** at three levels — sentence (`sent_tokenize`), word (`word_tokenize`), and punctuation-aware (`wordpunct_tokenize`, which splits contractions like `"How're"` differently than the standard word tokenizer) — plus `TreebankWordTokenizer` as another word-level option with its own punctuation-handling rules.
+
+Moved to **stemming**, comparing three stemmers on the same word list (`eating`, `programming`, `finalized`, etc.): `PorterStemmer` (classic, sometimes overly aggressive — e.g. reducing `"sportingly"` to a non-word stem), `RegexpStemmer` (rule-based, strips a custom suffix pattern like `ing$|s$|e$|able$`), and `SnowballStemmer` (an improved version of Porter that handles some edge cases like `"fairly"` better). Directly compared Porter vs. Snowball output side by side on the same words to see where they diverge.
+
+Contrasted stemming with **lemmatization** using `WordNetLemmatizer`, which returns actual dictionary words instead of chopped-off stems — but only when given the correct part-of-speech tag (`pos='v'` for verbs, etc.), since the default POS assumption changes the output.
+
+Built a full **preprocessing pipeline** on a paragraph: sentence tokenize → word tokenize → filter stopwords → stem (one pass) and separately word tokenize → filter stopwords → lemmatize (another pass), rejoining each sentence back into a string afterward. Noted `stopwords.words('nepali')` also works via NLTK's multilingual stopword lists.
+
+Covered **POS tagging** with `nltk.pos_tag()` on a Nepal-themed paragraph, referencing the standard Penn Treebank tag set (NN, VB, JJ, RB, PRP, DT, etc.). Attempted **named entity recognition** with `nltk.ne_chunk()` next, but `tree.draw()` kept crashing the kernel, so that cell was left commented out rather than fixed — a known Tkinter/rendering issue with `ne_chunk`'s tree visualization, not a code logic problem. Wrote a POS-tag-to-WordNet-tag mapping helper function (`get_wordnet_pos`) in preparation for POS-aware lemmatization, though it wasn't wired into a full pipeline yet.
+
+Closed with the **theory** behind the next vectorization step: Bag-of-Words (counting word frequency into a fixed-vocabulary vector) and TF-IDF (Term Frequency × Inverse Document Frequency), working through the IDF formula by hand with toy numbers (`log(1000/990)`, `log(100/50)`) to build intuition for why rare words get weighted higher than common ones before implementing it in code.
+
+**Takeaway:** stemming and lemmatization solve the same problem differently — stemming is fast but crude (can produce non-words), lemmatization is slower but linguistically correct, and it only works right if you tell it the correct part of speech first. Also, BoW and TF-IDF are worth understanding by hand with toy numbers before trusting `sklearn`'s vectorizer to do it — knowing *why* rare words get weighted higher makes the vectorizer output much less of a black box later.
+
+---
+
+*New day, new entry — this file gets a new section added as I go.*
 
 
 

@@ -371,8 +371,18 @@ Closed with the **theory** behind the next vectorization step: Bag-of-Words (cou
 **Takeaway:** stemming and lemmatization solve the same problem differently — stemming is fast but crude (can produce non-words), lemmatization is slower but linguistically correct, and it only works right if you tell it the correct part of speech first. Also, BoW and TF-IDF are worth understanding by hand with toy numbers before trusting `sklearn`'s vectorizer to do it — knowing *why* rare words get weighted higher makes the vectorizer output much less of a black box later.
 
 ---
+## Day 26 — Text Vectorization: SMS Spam Detection Prep
+
+**File:** `vectorization.ipynb`
+**Dataset:** SMS Spam Collection (`SMSSpamCollection`)
+
+Applied Day 25's theory to a real dataset — loaded ~5,500 labeled SMS messages (ham vs. spam) and built a full text-cleaning pipeline: stripped out anything that wasn't a letter with regex, lowercased everything, tokenized, removed stopwords, and stemmed what was left, appending each cleaned message to a running `corpus` list. Along the way, caught and fixed a performance issue — the stopword set was originally being rebuilt from `stopwords.words('english')` on every single loop iteration, which is wasteful; built it once before the loop instead.
+
+Vectorized the cleaned corpus two ways: `CountVectorizer` first as a simple binary bag-of-words (capped to the top 1000 features), then again with n-grams (2–3 word phrases instead of single words) to capture short phrases the single-word version would miss. Followed up with `TfidfVectorizer`, both on single words and on bigrams, to compare weighted term-importance vectors against the raw counts.
+
+**Takeaway:** vectorizer choice and n-gram range both change what the resulting features actually capture — single-word counts miss phrases entirely, so bigram/trigram ranges are worth trying even though they blow up the vocabulary size fast (hence capping `max_features`).
+
+---
 
 *New day, new entry — this file gets a new section added as I go.*
-
-
 

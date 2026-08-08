@@ -387,16 +387,30 @@ Vectorized the cleaned corpus two ways: `CountVectorizer` first as a simple bina
 
 ## Day 27 — Deep Learning: Bank Customer Churn Prediction (ANN)
 
-File: churn.ipynb (training), testing.ipynb (inference)
-Dataset: Churn_Modelling.csv
+**File:** `churn.ipynb` (training), `testing.ipynb` (inference)
+**Dataset:** `Churn_Modelling.csv`
 
-First neural network project. Dropped ID columns (RowNumber, CustomerId, Surname), label-encoded Gender, one-hot encoded Geography, scaled features with StandardScaler — saved all three (label_encoder_gender.pkl, onehot_encoder_geo.pkl, scaler.pkl) right after fitting.
+First neural network project. Dropped ID columns (`RowNumber`, `CustomerId`, `Surname`), label-encoded `Gender`, one-hot encoded `Geography`, scaled features with `StandardScaler` — saved all three (`label_encoder_gender.pkl`, `onehot_encoder_geo.pkl`, `scaler.pkl`) right after fitting.
 
-Built a Sequential ANN (64 → 32 ReLU → 1 sigmoid), compiled with Adam + binary crossentropy, trained with EarlyStopping on val_loss. Stopped around epoch 26 at ~86% val accuracy. Saved as churn_model.h5.
+Built a `Sequential` ANN (64 → 32 ReLU → 1 sigmoid), compiled with Adam + binary crossentropy, trained with `EarlyStopping` on `val_loss`. Stopped around epoch 26 at ~86% val accuracy. Saved as `churn_model.h5`.
 
-testing.ipynb loads the saved model + encoders + scaler, runs a new customer through the same preprocessing steps, and predicts churn probability.
+`testing.ipynb` loads the saved model + encoders + scaler, runs a new customer through the same preprocessing steps, and predicts churn probability.
 
-Takeaway: save every artifact the pipeline touches (encoders, scaler, model) — reusing instead of refitting is what makes inference match training.
+**Takeaway:** save every artifact the pipeline touches (encoders, scaler, model) — reusing instead of refitting is what makes inference match training.
+
+---
+
+## Day 28 — Deep Learning: Estimated Salary Prediction (ANN Regression)
+
+**File:** `regression.ipynb`
+**Dataset:** `Churn_Modelling.csv`
+
+Same bank dataset as Day 27, but flipped the task — predicting `EstimatedSalary` (regression) instead of `Exited` (classification), keeping `Exited` in as a feature this time. Same preprocessing: dropped IDs, label-encoded `Gender`, one-hot encoded `Geography`, added a correlation heatmap to check relationships before training.
+
+Built the same 64 → 32 ReLU architecture, but a single linear output unit and MSE loss instead of sigmoid + binary crossentropy. Trained with `EarlyStopping` on `val_loss`; it ran the full 72 allowed epochs before stopping, landing at a final val MSE of ~3.36B (RMSE ≈ $58K). Saved as `regressionmodel.h5`.
+
+**Takeaway:** salary turned out to be a much weaker regression target — a ~$58K RMSE on estimated salaries is a sign the encoded features here (geo, gender, balance, etc.) don't actually explain salary well, unlike churn which had a cleaner classification signal. Same architecture, same pipeline, very different result — a reminder that model choice matters less than whether the target is actually predictable from the given features.
+
 
 *New day, new entry — this file gets a new section added as I go.*
 

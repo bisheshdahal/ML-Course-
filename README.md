@@ -384,5 +384,19 @@ Vectorized the cleaned corpus two ways: `CountVectorizer` first as a simple bina
 
 ---
 
+
+## Day 27 — Deep Learning: Bank Customer Churn Prediction (ANN)
+
+File: churn.ipynb (training), testing.ipynb (inference)
+Dataset: Churn_Modelling.csv
+
+First neural network project. Dropped ID columns (RowNumber, CustomerId, Surname), label-encoded Gender, one-hot encoded Geography, scaled features with StandardScaler — saved all three (label_encoder_gender.pkl, onehot_encoder_geo.pkl, scaler.pkl) right after fitting.
+
+Built a Sequential ANN (64 → 32 ReLU → 1 sigmoid), compiled with Adam + binary crossentropy, trained with EarlyStopping on val_loss. Stopped around epoch 26 at ~86% val accuracy. Saved as churn_model.h5.
+
+testing.ipynb loads the saved model + encoders + scaler, runs a new customer through the same preprocessing steps, and predicts churn probability.
+
+Takeaway: save every artifact the pipeline touches (encoders, scaler, model) — reusing instead of refitting is what makes inference match training.
+
 *New day, new entry — this file gets a new section added as I go.*
 

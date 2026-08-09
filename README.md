@@ -411,6 +411,21 @@ Built the same 64 → 32 ReLU architecture, but a single linear output unit and 
 
 **Takeaway:** salary turned out to be a much weaker regression target — a ~$58K RMSE on estimated salaries is a sign the encoded features here (geo, gender, balance, etc.) don't actually explain salary well, unlike churn which had a cleaner classification signal. Same architecture, same pipeline, very different result — a reminder that model choice matters less than whether the target is actually predictable from the given features.
 
+## Day 28 — Introduction to PyTorch: Building Networks From Scratch
+
+**File:** `pytorch.ipynb`
+**Dataset:** Seaborn's built-in `tips` dataset (regression), `load_iris` from scikit-learn (classification)
+
+First time using PyTorch after several days of Keras/TensorFlow — a different way of building the same kind of models, writing the network as an actual Python class instead of stacking layers in a `Sequential` call. Two mini-projects in one sitting, one regression and one classification, to see the pattern apply to both.
+
+**Regression — `TipPredictor`:** predicted `tip` from `total_bill` and `size`. Split and scaled the data as usual, then converted everything to PyTorch tensors (`torch.FloatTensor`), reshaping the target with `.view(-1, 1)` to match what the network expects. Built `TipPredictor` as a class subclassing `nn.Module`, with an `nn.Sequential` stack going `2 → 32 → 16 → 8 → 1` with ReLU activations between each layer, and a `forward()` method defining how input flows through it. Trained manually with a `for` loop over 300 epochs — forward pass, compute `MSELoss`, zero the gradients, backpropagate, step the optimizer (`Adam`) — instead of a single `.fit()` call like Keras. Evaluated with MAE/MSE/RMSE/R² and tested it on a new customer (bill $25.50, party of 2).
+
+**Classification — `IrisClassifier`:** same pattern, different shape and loss function. Network went `4 → 32 → 16 → 3` (4 input features, 3 output classes for the 3 iris species), used `CrossEntropyLoss` instead of `MSELoss`, and target labels went into `torch.LongTensor` instead of `FloatTensor` since classification targets are class indices, not continuous values. Trained the same manual loop, then evaluated with accuracy, a confusion matrix, and a classification report — and ran a prediction on a single new flower sample.
+
+**Takeaway:** PyTorch makes you write out the training loop by hand — forward pass, loss, `zero_grad()`, `backward()`, `step()` — instead of hiding it behind `.fit()`, which is more code but makes it much clearer what's actually happening at each step of training. The regression-vs-classification difference mostly comes down to three things: the final layer's output size, the loss function (`MSELoss` vs `CrossEntropyLoss`), and the target tensor's dtype (`Float` vs `Long`).
+
+---
+
 
 *New day, new entry — this file gets a new section added as I go.*
 

@@ -1,3 +1,7 @@
-.venv/
 __pycache__/
+*.pyc
+.venv/
+venv/
+env/
 .ipynb_checkpoints/
+Pytorch/Computer_Vision/data/
